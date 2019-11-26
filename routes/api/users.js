@@ -24,23 +24,17 @@ router.post('/register', (req, res) => {
         address
     } = req.body
     if (password !== confirmPassword) {
-        return res.status(400).json({
-            msg: 'Password do not match!'
-        });
+        return res.send('Password do not match!');
     }
     else {
         User.findOne({ username: username }).then(user => {
             if (user) {
-                return res.status(400).json({
-                    msg: 'Username is already taken.'
-                });
+                return res.send('Username is already taken.');
             } else {
                 User.findOne({ email: email }).then(user => {
                     if (user) {
-                        return res.status(400).json({
-                            msg: 'Email is already taken.'
-                        });
-                    } else{
+                        return res.send('Email is already taken.');
+                    } else {
                         let newUser = new User({
                             name: name,
                             username: username,
@@ -49,7 +43,7 @@ router.post('/register', (req, res) => {
                             password: password,
                             userType: userType
                         })
-                    
+
                         bcrypt.genSalt(10, (err, salt) => {
                             bcrypt.hash(newUser.password, salt, (err, hash) => {
                                 if (err) {
@@ -57,38 +51,36 @@ router.post('/register', (req, res) => {
                                 } else {
                                     newUser.password = hash;
                                     newUser.save().then(user => {
-                                        res.status(200).json({
-                                            success: true,
-                                            msg: 'You are now registered!'
-                                        })
-                                    })
+                                        res.send('You are now registered!');
+                                    });
                                 }
                             })
-                    
+
                         })
                     }
-                    
-                    
+
+
                 });
 
 
-            
-                
+
+
             }
         })
     }
-    
-    
-    
+
+
+
 });
 
 router.post('/login', (req, res) => {
-    User.findOne({username: req.body.username }).then(user => {
+    User.findOne({ username: req.body.username }).then(user => {
         if (!user) {
-            res.status(404).json({
-                msg: 'Account not found!',
-                success: false
-            });
+            // res.status(404).json({
+            //     msg: 'Account not found!',
+            //     success: false
+            // });
+            return res.send('Account not found!')
         } else {
             bcrypt.compare(req.body.password, user.password).then(match => {
                 if (match) {
@@ -98,29 +90,31 @@ router.post('/login', (req, res) => {
                         username: user.username,
                         email: user.email,
                         userType: user.userType,
-                        address: user.address                      
+                        address: user.address
                     }
                     jwt.sign(payload, key, {
                         expiresIn: 604800
                     }, (err, token) => {
-                        if(err){
+                        if (err) {
                             res.status(400).json({
                                 msg: "Error!",
                                 success: false
                             });
                         } else {
-                            res.status(200).json({
-                            success: true,
-                            token: `Bearer ${token}`,
-                            msg: 'You are now logged in!'
-                            });
+                            // res.status(200).json({
+                            //     success: true,
+                            //     token: `Bearer ${token}`,
+                            //     msg: 'You are now logged in!'
+                            // });
+                            return res.send("Succesfully log in!");
                         }
                     });
                 } else {
-                    res.status(400).json({
-                        msg: 'Password is incorrect!',
-                        success: false
-                    });
+                    // res.status(400).json({
+                    //     msg: 'Password is incorrect!',
+                    //     success: false
+                    // });
+                    return res.send("Password is incorrect!");
                 }
             });
         }
@@ -135,7 +129,7 @@ router.get('/profile', passport.authenticate('jwt',
             user: req.user
         });
     }
-    
+
 );
 
 module.exports = router;
