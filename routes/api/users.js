@@ -52,6 +52,7 @@ router.post('/register', (req, res) => {
                                     newUser.password = hash;
                                     newUser.save().then(user => {
                                         res.send('You are now registered!');
+                                        console.log("Successfully Registered.");
                                     });
                                 }
                             })
@@ -76,10 +77,6 @@ router.post('/register', (req, res) => {
 router.post('/login', (req, res) => {
     User.findOne({ username: req.body.username }).then(user => {
         if (!user) {
-            // res.status(404).json({
-            //     msg: 'Account not found!',
-            //     success: false
-            // });
             return res.send('Account not found!')
         } else {
             bcrypt.compare(req.body.password, user.password).then(match => {
@@ -101,19 +98,12 @@ router.post('/login', (req, res) => {
                                 success: false
                             });
                         } else {
-                            // res.status(200).json({
-                            //     success: true,
-                            //     token: `Bearer ${token}`,
-                            //     msg: 'You are now logged in!'
-                            // });
+                            console.log("Successfully Login.");
                             return res.send("Succesfully log in!");
+                            
                         }
                     });
                 } else {
-                    // res.status(400).json({
-                    //     msg: 'Password is incorrect!',
-                    //     success: false
-                    // });
                     return res.send("Password is incorrect!");
                 }
             });
