@@ -19,67 +19,53 @@ router.post('/register', (req, res) => {
         username,
         email,
         password,
-        confirmPassword,
-        userType,
-        address
+        userType
     } = req.body
-    if (password !== confirmPassword) {
-        return res.send('Password do not match!');
-    }
-    else {
-        User.findOne({ username: username }).then(user => {
-            if (user) {
-                return res.send('Username is already taken.');
-            } else {
-                User.findOne({ email: email }).then(user => {
-                    if (user) {
-                        return res.send('Email is already taken.');
-                    } else {
-                        let newUser = new User({
-                            name: name,
-                            username: username,
-                            address: address,
-                            email: email,
-                            password: password,
-                            userType: userType
+    User.findOne({ username: username }).then(user => {
+        if (user) {
+            return res.send('Username is already taken.');
+        } else {
+            User.findOne({ email: email }).then(user => {
+                if (user) {
+                    return res.send('Email is already taken.');
+                } else {
+                    let newUser = new User({
+                        name: name,
+                        username: username,
+                        email: email,
+                        password: password,
+                        userType: userType
+                    })
+
+                    bcrypt.genSalt(10, (err, salt) => {
+                        bcrypt.hash(newUser.password, salt, (err, hash) => {
+                            if (err) {
+                                throw err;
+                            } else {
+                                newUser.password = hash;
+                                newUser.save().then(user => {
+                                    res.send('You are now registered!');
+                                    console.log("Successfully Registered.");
+                                });
+                            }
                         })
 
-                        bcrypt.genSalt(10, (err, salt) => {
-                            bcrypt.hash(newUser.password, salt, (err, hash) => {
-                                if (err) {
-                                    throw err;
-                                } else {
-                                    newUser.password = hash;
-                                    newUser.save().then(user => {
-                                        res.send('You are now registered!');
-                                        console.log("Successfully Registered.");
-                                    });
-                                }
-                            })
+                    })
+                }
 
-                        })
-                    }
-
-
-                });
-
-
-
-
-            }
-        })
-    }
-
-
-
+            });
+        }
+    })
 });
 
 router.post('/login', (req, res) => {
-    User.findOne({ username: req.body.username }).then(user => {
+    console.log(req.body)
+    User.findOne({ username: req.body.data.uname }).then(user => {
+        console.log(user)
         if (!user) {
             return res.send('Account not found!')
         } else {
-            bcrypt.compare(req.body.password, user.password).then(match => {
+            bcrypt.compare(req.body.data.password, user.password).then(match => {
                 if (match) {
                     const payload = {
                         _id: user._id,
@@ -87,7 +73,6 @@ router.post('/login', (req, res) => {
                         username: user.username,
                         email: user.email,
                         userType: user.userType,
-                        address: user.address
                     }
                     jwt.sign(payload, key, {
                         expiresIn: 604800
@@ -99,14 +84,23 @@ router.post('/login', (req, res) => {
                             });
                         } else {
                             console.log("Successfully Login.");
-                            return res.send("Succesfully log in!");
-                            
+                            return res.send({
+                                status: 200,
+                                mgs:"Successfully logged in!",
+                                success: true,
+                                token: token
+                            });
                         }
                     });
+                
+                    console.log('exists')
                 } else {
                     return res.send("Password is incorrect!");
                 }
-            });
+            })
+            .catch((error)=>{
+                console.log(error)
+            })
         }
     })
 });

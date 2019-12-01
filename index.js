@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const cors = require('cors');
 const passport = require('passport');
+const multer = require('multer');
 
 
 const app = express();
@@ -28,6 +29,17 @@ app.use(passport.initialize());
 
 require('./config/passport')(passport);
 
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, './public/images')
+    },
+    filename: function (req, file, cb) {
+      cb(null, file.fieldname + '-' + Date.now()+'.jpg')
+    }
+  });
+
+  var upload = multer({ storage: storage });
+
 
 
 // app.get('/', (req,res) => {
@@ -35,9 +47,11 @@ require('./config/passport')(passport);
 // });
 
 const user = require('./routes/api/users');
+const post = require('./routes/api/posts');
 app.use('/api/users',user);
+app.use('/api/posts',upload.single('img'),post)
 
-
+mongoose.Promise = global.Promise;
 //Connecting to database
 const db = require('./config/keys').mongoURI;
 mongoose.connect(db, { 

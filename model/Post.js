@@ -11,15 +11,25 @@ const postSchema = new Schema({
         required: false
     },
     post_image: {
-        type: String,
+        type: Object,
         required: false
     },
     category: {
         type: String,
         required: true
     },
+    comments: {
+        type: String,
+        required: false
+    },
+    rating: {
+        type: Number,
+        required: false
+    }
+    ,
     date_time: {
-        type: Date.now(),
+        type: Date,
+        default: Date.now(),
         required: true
     }
 });
