@@ -11,8 +11,8 @@ const postSchema = new Schema({
         required: false
     },
     post_image: {
-        type: Object,
-        required: false
+        type: String,
+        required: true
     },
     category: {
         type: String,
