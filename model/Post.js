@@ -25,8 +25,7 @@ const postSchema = new Schema({
     rating: {
         type: Number,
         required: false
-    }
-    ,
+    },
     date_time: {
         type: Date,
         default: Date.now(),

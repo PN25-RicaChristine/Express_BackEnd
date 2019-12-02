@@ -88,7 +88,8 @@ router.post('/login', (req, res) => {
                                 status: 200,
                                 mgs:"Successfully logged in!",
                                 success: true,
-                                token: token
+                                token: token,
+                                userType: user.userType
                             });
                         }
                     });
