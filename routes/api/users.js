@@ -13,7 +13,7 @@ const key = require('../../config/keys').secret;
  * @access Public
  */
 
- //for register function
+//for register function
 router.post('/register', (req, res) => {
     let {
         name,
@@ -74,6 +74,7 @@ router.post('/login', (req, res) => {
                         _id: user._id,
                         name: user.name,
                         username: user.username,
+                        password :user.password,
                         email: user.email,
                         userType: user.userType,
                     }
@@ -89,74 +90,28 @@ router.post('/login', (req, res) => {
                             console.log("Successfully Login.");
                             return res.send({
                                 status: 200,
-                                mgs:"Successfully logged in!",
+                                mgs: "Successfully logged in!",
                                 success: true,
                                 token: token,
+                                name:user.name,
                                 userType: user.userType
                             });
                         }
                     });
-                
+
                     console.log('exists')
                 } else {
                     return res.send("Password is incorrect!");
                 }
             })
-            .catch((error)=>{
-                console.log(error)
-            })
+                .catch((error) => {
+                    console.log(error)
+                })
         }
     })
 });
 
 //for getting the user informations
-router.get('/getInfo/:username', (req, res) => {
-    console.log(req.body)
-    User.findOne({ username: req.body.data.uname }).then(user => {
-        console.log(user)
-        if (!user) {
-            return res.send('Account not found!')
-        } else {
-            bcrypt.compare(req.body.data.password, user.password).then(match => {
-                if (match) {
-                    const payload = {
-                        _id: user._id,
-                        name: user.name,
-                        username: user.username,
-                        email: user.email,
-                        userType: user.userType,
-                    }
-                    jwt.sign(payload, key, {
-                        expiresIn: 604800
-                    }, (err, token) => {
-                        if (err) {
-                            res.status(400).json({
-                                msg: "Error!",
-                                success: false
-                            });
-                        } else {
-                            console.log("Successfully Login.");
-                            return res.send({
-                                status: 200,
-                                mgs:"Successfully logged in!",
-                                success: true,
-                                token: token,
-                                userType: user.userType
-                            });
-                        }
-                    });
-                
-                    console.log('exists')
-                } else {
-                    return res.send("Password is incorrect!");
-                }
-            })
-            .catch((error)=>{
-                console.log(error)
-            })
-        }
-    })
-});
 
 router.get('/profile', passport.authenticate('jwt',
     {
