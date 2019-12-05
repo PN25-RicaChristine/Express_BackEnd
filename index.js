@@ -5,22 +5,23 @@ const path = require('path');
 const cors = require('cors');
 const passport = require('passport');
 const multer = require('multer');
-
-
 const app = express();
 
-// Initializing middleware
 
-// Form Data middleware
-app.use(bodyParser.urlencoded({
-    extended: false
-}));
 
-// Json Body middleware
-app.use(bodyParser.json());
-
-//Cors middleware
-app.use(cors());
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './public/images/')
+  },
+  filename: function (req, file, cb) {
+  	console.log(req)
+    cb(null,  Date.now() + path.extname(file.originalname));
+  }
+});
+const upload = multer({ storage:  storage});
+app.use(cors())
+app.use(bodyParser.json()); 
+app.use(bodyParser.urlencoded({ extended: true })); 
 
 app.use('/static', express.static('public'))
 
@@ -32,16 +33,18 @@ app.use(passport.initialize());
 
 require('./config/passport')(passport);
 
-var storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, './public/images')
-    },
-    filename: function (req, file, cb) {
-      cb(null, file.fieldname + '-' + Date.now()+'.jpg')
-    }
-  });
 
-  var upload = multer({ storage: storage });
+app.get('/images/:filename', (req, res) => {
+	res.sendFile(__dirname + '/public/images/' + req.params.filename)
+})
+
+app.post('/images/upload/:id', upload.single('file'), (req, res) => {
+	console.log(`new upload = ${req.file.filename}\n`);
+  console.log(req.file);
+  res.json({ route: 'images/' + req.file.filename});
+  //res.send({ route: 'images/' + req.file.filename});
+  // res.send(req.file.filename);
+})
 
 
 
