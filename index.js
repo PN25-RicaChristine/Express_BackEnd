@@ -41,9 +41,9 @@ app.get('/images/:filename', (req, res) => {
 app.post('/images/upload/:id', upload.single('file'), (req, res) => {
 	console.log(`new upload = ${req.file.filename}\n`);
   console.log(req.file);
-  res.json({ route: 'images/' + req.file.filename});
+  // res.json({ route: 'images/' + req.file.filename});
   //res.send({ route: 'images/' + req.file.filename});
-  // res.send(req.file.filename);
+res.send('images/' + req.file.filename);
 })
 
 

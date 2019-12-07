@@ -1,20 +1,15 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-// Create Post schema
-const postSchema = new Schema({
+// create new Schema
+const commentSchema = new Schema({
     account_id: {
         type: Schema.Types.ObjectId, ref: 'User', sparse: true
     },
-    post_text: {
-        type: String,
-        required: false
+    post_id: {
+        type: Schema.Types.ObjectId, ref: 'posts', sparse: true
     },
-    post_image: {
-        type: String,
-        required: true
-    },
-    category: {
+    comment_text: {
         type: String,
         required: true
     },
@@ -25,4 +20,4 @@ const postSchema = new Schema({
     }
 });
 
-module.exports = mongoose.model('posts', postSchema);
+module.exports = mongoose.model('comments', commentSchema);

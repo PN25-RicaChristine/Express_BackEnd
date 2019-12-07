@@ -74,7 +74,7 @@ router.post('/login', (req, res) => {
                         _id: user._id,
                         name: user.name,
                         username: user.username,
-                        password :user.password,
+                        password: user.password,
                         email: user.email,
                         userType: user.userType,
                     }
@@ -93,7 +93,7 @@ router.post('/login', (req, res) => {
                                 mgs: "Successfully logged in!",
                                 success: true,
                                 token: token,
-                                name:user.name,
+                                name: user.name,
                                 userType: user.userType
                             });
                         }
@@ -112,17 +112,25 @@ router.post('/login', (req, res) => {
 });
 
 //for getting the user informations
+// router.get('/profile', (req, res) => {
+    
+//     passport.authenticate(req.body.token, {session:false}, (done) => {
+        
+//         return res.json({
+//             user:done
+//         })
+//     })
+// })
 
-router.get('/profile', passport.authenticate('jwt',
-    {
-        session: false
-    }), (req, res) => {
-        return res.json({
-            user: req.user
-        });
-    }
 
-);
+
+router.get('/profile', passport.authenticate('jwt',(req, res) => {
+    console.log("Hi nagbasa to");
+    return res.json({
+        user: req.user
+    });
+}
+));
 
 module.exports = router;
 
